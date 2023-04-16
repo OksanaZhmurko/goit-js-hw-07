@@ -2,47 +2,65 @@ import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
 
-const galleryMarkUp = document.querySelector('.gallery');
+const divEl = document.querySelector('.gallery');
+const cardsItem = createLiElement(galleryItems);
 
-const galleryEl = galleryItems
-    .map(({ preview, description, original }) => {
-        return
-    `<div class="gallery__item">
-        <a class="gallery__link" href="${original}">
-            <img
-            class="gallery__image"
-            src="${preview}"
-            data-source="${original}"
-            alt="${description}"
-            />
-        </a>
-    </div>`})
+divEl.insertAdjacentHTML('beforeend', cardsItem);
+
+function createLiElement(galleryItems) {
+  return galleryItems
+    .map(({ preview, original, description }) => {
+      return `
+ <div class="gallery__item">
+  <a class="gallery__link" href="${original}">
+    <img
+      class="gallery__image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</div>`;
+    })
     .join('');
+}
 
-galleryMarkUp.insertAdjacentHTML('beforeend', galleryEl)
+divEl.addEventListener('click', clickOpenModal);
+const instance = '';
 
-galleryMarkUp.addEventListener('click', onImgClick)
+function clickOpenModal(event) {
+  event.preventDefault();
 
-function onImgClick(evt) {
-    evt.preventDefault();
+  if (!event.target.classList.contains('gallery__image')) {
+    return;
+  }
+  window.addEventListener('keydown', onEscapePress);
+  const clickOpenModalEl = event.target;
+  const indexGalleryItems = galleryItems.findIndex(
+    option => option.description === clickOpenModalEl.alt,
+  );
 
-    if (evt.target.nodeName !== 'IMG') {
-        return;
-    }
+  let instance = basicLightbox.create(`
+    <img class="gallery__image" src="${galleryItems[indexGalleryItems].original}"
+     alt="${galleryItems[indexGalleryItems].description}">`);
 
-    const modal = basicLightbox.create(
-        `<img src="${evt.target.dataset.source}" width="800" height="600">`,
+  instance.show();
 
-        {   onShow: () => window.addEventListener('keydown', onEscKeyPress),
-            onClose: () => window.removeEventListener('keydown', onEscKeyPress),
-        }
-    );
-    
-    modal.show();
+  const closeElModal = document.querySelector('.basicLightbox');
+  closeElModal.addEventListener('click', onCloseModal);
+}
 
-    function onEscKeyPress(evt) {   
-        if (evt.code === "Escape") {
-            modal.close();
-        }
-    }
+function onCloseModal() {
+  window.removeEventListener('keydown', onEscapePress);
+  instance.close;
+  const closeElModal = document.querySelector('.basicLightbox');
+  closeElModal.remove();
+}
+
+function onEscapePress(event) {
+  if (event.code === 'Escape') {
+    const closeEl = document.querySelector('.basicLightbox');
+    closeEl.remove();
+    window.removeEventListener('keydown', onEscapePress);
+  }
 }
