@@ -2,16 +2,16 @@ import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
 
-const divEl = document.querySelector('.gallery');
-const cardsItem = createLiElement(galleryItems);
+const galleryContainer = document.querySelector('.gallery');
+const itemsMarkup = createGalleryItemsMarkup(galleryItems);
+galleryContainer.insertAdjacentHTML('beforeend', itemsMarkup);
+galleryContainer.addEventListener('click', onImgClick);
 
-divEl.insertAdjacentHTML('beforeend', cardsItem);
 
-function createLiElement(galleryItems) {
-  return galleryItems
+function createGalleryItemsMarkup(items) {
+  return items
     .map(({ preview, original, description }) => {
-      return `
- <div class="gallery__item">
+      return `<div class="gallery__item">
   <a class="gallery__link" href="${original}">
     <img
       class="gallery__image"
@@ -25,42 +25,19 @@ function createLiElement(galleryItems) {
     .join('');
 }
 
-divEl.addEventListener('click', clickOpenModal);
-const instance = '';
-
-function clickOpenModal(event) {
-  event.preventDefault();
-
-  if (!event.target.classList.contains('gallery__image')) {
-    return;
-  }
-  window.addEventListener('keydown', onEscapePress);
-  const clickOpenModalEl = event.target;
-  const indexGalleryItems = galleryItems.findIndex(
-    option => option.description === clickOpenModalEl.alt,
-  );
-
-  let instance = basicLightbox.create(`
-    <img class="gallery__image" src="${galleryItems[indexGalleryItems].original}"
-     alt="${galleryItems[indexGalleryItems].description}">`);
-
+function onImgClick(e) {
+  e.preventDefault();
+  
+  const datasetSource = e.target.dataset.source;
+  if (!datasetSource.nodeName !=='Img') return;
+}
+  const instance = basicLightbox.create(`
+    <img src="${datasetSource}" width="800" height="600">
+  `);
   instance.show();
 
-  const closeElModal = document.querySelector('.basicLightbox');
-  closeElModal.addEventListener('click', onCloseModal);
-}
 
-function onCloseModal() {
-  window.removeEventListener('keydown', onEscapePress);
-  instance.close;
-  const closeElModal = document.querySelector('.basicLightbox');
-  closeElModal.remove();
-}
 
-function onEscapePress(event) {
-  if (event.code === 'Escape') {
-    const closeEl = document.querySelector('.basicLightbox');
-    closeEl.remove();
-    window.removeEventListener('keydown', onEscapePress);
-  }
-}
+
+
+

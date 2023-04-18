@@ -2,15 +2,9 @@ import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
 const galleryContainer = document.querySelector('.gallery');
-galleryContainer.insertAdjacentHTML(
-  'beforeend',
-  createGalleryItemsMarkup(galleryItems),
-);
-
-function createGalleryItemsMarkup(items) {
-  return items
-    .map(({ preview, original, description }) => {
-      return `<li>
+const markup = galleryItems.reduce(
+  (acc, { original, preview, description }) =>
+    (acc += `<li>
   <a class="gallery__item" href="${original}">
     <img
       class="gallery__image"
@@ -18,13 +12,13 @@ function createGalleryItemsMarkup(items) {
       alt="${description}"
     />
   </a>
-</li>`;
-    })
-    .join('');
-}
+</li>`),
+  ''
+);
+
+galleryContainer.insertAdjacentHTML('beforeend', markup);
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
-  captionPosition: 'bottom',
   captionDelay: 250,
 });
