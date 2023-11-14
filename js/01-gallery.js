@@ -25,16 +25,35 @@ function createGalleryItemsMarkup(items) {
     .join('');
 }
 
-function onImgClick(e) {
-  e.preventDefault();
+  const instance = basicLightbox.create(
+    `
+  <img width="1280" height="auto" src="">`,
+    {
+      onShow: (instance) => {
+        window.addEventListener('keydown', onEscKeyPress);
+      },
+      onClose: (instance) => {
+        window.removeEventListener('keydown', onEscKeyPress);
+      },
+    }
+  );
+
+
+  function onImgClick(e) {
+    e.preventDefault();
+    if (e.target.nodeName !== 'IMG') return;
+    const datasetSource = e.target.dataset.source;
+    if (!datasetSource) return;
+    instance.element().querySelector('img').src = datasetSource;
+    instance.show();
+  }
   
-  const datasetSource = e.target.dataset.source;
-  if (!datasetSource.nodeName !=='Img') return;
-}
-  const instance = basicLightbox.create(`
-    <img src="${datasetSource}" width="800" height="600">
-  `);
-  instance.show();
+  function onEscKeyPress(e) {
+    if (e.code !== 'Escape') return;
+    instance.close();
+  }
+  
+
 
 
 
